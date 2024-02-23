@@ -50,7 +50,7 @@ function cleanSnap() {
         return
     fi
 
-    local sizeBefore=$(du -h "$path" 2>/dev/null | cut -f1)
+    local sizeBefore=$(du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore" 
 
     set -eu
