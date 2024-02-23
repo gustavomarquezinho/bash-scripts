@@ -88,7 +88,7 @@ function cleanThumbnails() {
     echo -e "\n${BOLD_YELLOW}Cleaning THUMBNAILS...${WHITE}"
 
     if [[ ! -d "/home/$USER/.cache/thumbnails" ]]; then
-        echo "\nDirectory not found.\n"
+        echo -e "\nDirectory not found.\n"
         return
     fi
 
