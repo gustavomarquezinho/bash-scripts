@@ -110,7 +110,7 @@ function clean_thumbnails() {
     local size_before=$(du -sh "$path" 2>/dev/null | cut -f1)
     echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
 
-    rm -rf -v "${path}/*"
+    rm -rf -v "$path"/*
 
     local size_after=$(du -sh "$path" 2>/dev/null | cut -f1)
     echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
@@ -145,7 +145,7 @@ function clean_spotify() {
     local size_before=$(du -sh "$path" 2>/dev/null | cut -f1)
     echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
 
-    rm -rf -v "${path}/*"
+    rm -rf -v "$path"/*
 
     local size_after=$(du -sh "$path" 2>/dev/null | cut -f1)
     echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
