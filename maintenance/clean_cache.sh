@@ -5,19 +5,19 @@ BOLD_YELLOW='\e[1;33m'
 WHITE='\033[0m'
 
 
-function getFileSystemInfo() {
+function get_file_system_info() {
     result=$(df -BM --output=target,size,used,avail,pcent / /home)
     echo -e "$result"
 }
 
-function showLine() {
+function print_line() {
     printf "%"60"s\n" | tr " " "_"
 }
 
-function cleanAPT() {
+function clean_apt() {
     local path="/var/cache/apt"
 
-    showLine
+    print_line
     echo -e "\n${BOLD_YELLOW}Cleaning APT...${WHITE}"
 
     if [[ ! -d "$path" ]]; then
@@ -25,24 +25,23 @@ function cleanAPT() {
         return
     fi
 
-    local sizeBefore=$(du -sh "$path" 2>/dev/null | cut -f1)
-    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
+    local size_before=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
 
     sudo apt clean
     sudo apt autoremove --purge -y
     sudo apt autoclean -y
 
-    local sizeAfter=$(du -sh "$path" 2>/dev/null | cut -f1)
-    printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
+    local size_after=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
     echo -e "${BOLD_YELLOW}APT Cleaned.${WHITE}\n"
-    sleep 1
     return
 }
 
-function cleanSnap() {
+function clean_snap() {
     local path="/var/lib/snapd/snaps"
 
-    showLine
+    print_line
     echo -e "\n${BOLD_YELLOW}Cleaning SNAP...${WHITE}"
 
     if [[ ! -d "$path" ]]; then
@@ -50,8 +49,8 @@ function cleanSnap() {
         return
     fi
 
-    local sizeBefore=$(du -sh "$path" 2>/dev/null | cut -f1)
-    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore" 
+    local size_before=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n" 
 
     set -eu
     snap list --all | awk '/disabled/{print $1, $3}' |
@@ -59,14 +58,13 @@ function cleanSnap() {
             sudo snap remove "$snapname" --revision="$revision"
         done
 
-    local sizeAfter=$(du -sh "$path" 2>/dev/null | cut -f1)
-    printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
+    local size_after=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
     echo -e "${BOLD_YELLOW}SNAP Cleaned${WHITE}.\n"
-    sleep 1
     return
 }
 
-function cleanFlatpak() {
+function clean_flatpak() {
     local path="/var/tmp/"
     local folder_prefix="flatpak-cache-*"
 
@@ -77,7 +75,7 @@ function cleanFlatpak() {
         done
     )
 
-    showLine
+    print_line
     echo -e "\n${BOLD_YELLOW}Cleaning FLATPAK...${WHITE}"
 
     if [[ -z "$folders" ]]; then
@@ -85,24 +83,23 @@ function cleanFlatpak() {
         return
     fi
 
-    local sizeBefore=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
-    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "${sizeBefore}"
+    local size_before=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
+    echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
 
     for folder in $folders; do
         rm -rfv "${path}/${folder}"
     done
 
-    local sizeAfter=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
-    printf "\n${BOLD_YELLOW}Size After: %.2f${WHITE}\n" "${sizeAfter}"
+    local size_after=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
+    echo -e "\n${BOLD_YELLOW}Size After: %.2f${WHITE}\n" "${size_after}"
     echo -e "${BOLD_YELLOW}FLATPAK Cleaned.${WHITE}\n"
-    sleep 1
     return
 }
 
-function cleanThumbnails() {
+function clean_thumbnails() {
     local path="/home/$USER/.cache/thumbnails/"
 
-    showLine
+    print_line
     echo -e "\n${BOLD_YELLOW}Cleaning THUMBNAILS...${WHITE}"
 
     if [[ ! -d "$path" ]]; then
@@ -110,46 +107,53 @@ function cleanThumbnails() {
         return
     fi
 
-    local sizeBefore=$(du -sh "$path" 2>/dev/null | cut -f1)
-    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
+    local size_before=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
 
     rm -rf "${path}/*"
 
-    local sizeAfter=$(du -sh "$path" 2>/dev/null | cut -f1)
-    printf "${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
+    local size_after=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
     echo -e "${BOLD_YELLOW}THUMBNAILS Cleaned.${WHITE}\n"
-    sleep 1
     return
 }
 
-function cleanJournalctl() {
-    showLine
+function clean_journalctl() {
+    print_line
     echo -e "\n${BOLD_YELLOW}Cleaning JOURNALCTL...${WHITE}"
-    local sizeBefore=$(journalctl --disk-usage 2>/dev/null | cut -f1)
-    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
+    local size_before=$(journalctl --disk-usage 2>/dev/null | cut -f1)
+    echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
 
     sudo journalctl --vacuum-time=7d
 
-    local sizeAfter=$(journalctl --disk-usage 2>/dev/null | cut -f1)
-    printf "${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
+    local size_after=$(journalctl --disk-usage 2>/dev/null | cut -f1)
+    echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
     echo -e "${BOLD_YELLOW}JOURNALCTL Cleaned.${WHITE}\n"
-    sleep 1
 }
 
-oldFileSystemInfo=$(getFileSystemInfo)
+old_file_system_info=$(get_file_system_info)
 
-cleanAPT
-cleanSnap
-cleanFlatpak
-cleanThumbnails
-cleanJournalctl
+clean_apt
+sleep 1
 
-newFileSystemInfo=$(getFileSystemInfo)
+clean_snap
+sleep 1
 
-showLine
+clean_flatpak
+sleep 1
+
+clean_thumbnails
+sleep 1
+
+clean_journalctl
+sleep 1
+
+new_file_system_info=$(get_file_system_info)
+
+print_line
 echo -e "\n${BOLD_YELLOW}Old File System Info${WHITE}"
-echo -e "$oldFileSystemInfo"
+echo -e "$old_file_system_info"
 
 echo -e "\n${BOLD_YELLOW}New File System Info${WHITE}"
-echo -e "$newFileSystemInfo\n"
-showLine
+echo -e "$new_file_system_info\n"
+print_line
