@@ -17,6 +17,12 @@ function showLine() {
 function cleanAPT() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning APT...${WHITE}"
+
+    if [[ ! -d "/var/cache/apt" ]]; then
+        echo -e "\nDirectory not found.\n"
+        return
+    fi
+
     local sizeBefore=$(sudo du -sh /var/cache/apt 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
@@ -28,11 +34,18 @@ function cleanAPT() {
     printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}APT Cleaned.${WHITE}\n"
     sleep 1
+    return
 }
 
 function cleanSnap() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning SNAP...${WHITE}"
+
+    if [[ ! -d "/var/lib/snapd/snaps" ]]; then
+        echo -e "\nDirectory not found.\n"
+        return
+    fi
+
     local sizeBefore=$(sudo du -h /var/lib/snapd/snaps 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore" 
 
@@ -46,25 +59,39 @@ function cleanSnap() {
     printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}SNAP Cleaned${WHITE}.\n"
     sleep 1
+    return
 }
 
 function cleanFlatpak() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning FLATPAK...${WHITE}"
+
+    if [[ ! -d "/var/tmp/flatpak-cache*" ]]; then
+        echo -e "\nDirectory not found.\n"
+        return
+    fi
+
     local sizeBefore=$(du -h /var/tmp/flatpak-cache* 2>/dev/null | awk '{sum+=$1} END {print sum}')
-    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
+    printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "${sizeBefore}"
 
     sudo rm -rfv /var/tmp/flatpak-cache-*
 
     local sizeAfter=$(du -h /var/tmp/flatpak-cache* 2>/dev/null | awk '{sum+=$1} END {print sum}')
-    printf "\n${BOLD_YELLOW}Size After: %.2f${WHITE}\n" "$sizeAfter"
+    printf "\n${BOLD_YELLOW}Size After: %.2f${WHITE}\n" "${sizeAfter}"
     echo -e "${BOLD_YELLOW}FLATPAK Cleaned.${WHITE}\n"
     sleep 1
+    return
 }
 
 function cleanThumbnails() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning THUMBNAILS...${WHITE}"
+
+    if [[ ! -d "/home/$USER/.cache/thumbnails" ]]; then
+        echo "\nDirectory not found.\n"
+        return
+    fi
+
     local sizeBefore=$(sudo du -sh ~/.cache/thumbnails 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
@@ -74,6 +101,7 @@ function cleanThumbnails() {
     printf "${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}THUMBNAILS Cleaned.${WHITE}\n"
     sleep 1
+    return
 }
 
 function cleanJournalctl() {
