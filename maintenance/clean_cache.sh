@@ -25,14 +25,14 @@ function cleanAPT() {
         return
     fi
 
-    local sizeBefore=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
+    local sizeBefore=$(du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
     sudo apt clean
     sudo apt autoremove --purge -y
     sudo apt autoclean -y
 
-    local sizeAfter=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
+    local sizeAfter=$(du -sh "$path" 2>/dev/null | cut -f1)
     printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}APT Cleaned.${WHITE}\n"
     sleep 1
@@ -50,7 +50,7 @@ function cleanSnap() {
         return
     fi
 
-    local sizeBefore=$(sudo du -h "$path" 2>/dev/null | cut -f1)
+    local sizeBefore=$(du -h "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore" 
 
     set -eu
@@ -59,7 +59,7 @@ function cleanSnap() {
             sudo snap remove "$snapname" --revision="$revision"
         done
 
-    local sizeAfter=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
+    local sizeAfter=$(du -sh "$path" 2>/dev/null | cut -f1)
     printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}SNAP Cleaned${WHITE}.\n"
     sleep 1
@@ -89,7 +89,7 @@ function cleanFlatpak() {
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "${sizeBefore}"
 
     for folder in $folders; do
-        sudo rm -rfv "${path}/${folder}"
+        rm -rfv "${path}/${folder}"
     done
 
     local sizeAfter=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
@@ -110,12 +110,12 @@ function cleanThumbnails() {
         return
     fi
 
-    local sizeBefore=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
+    local sizeBefore=$(du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
-    sudo rm -rf "${path}/*"
+    rm -rf "${path}/*"
 
-    local sizeAfter=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
+    local sizeAfter=$(du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}THUMBNAILS Cleaned.${WHITE}\n"
     sleep 1
@@ -125,12 +125,12 @@ function cleanThumbnails() {
 function cleanJournalctl() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning JOURNALCTL...${WHITE}"
-    local sizeBefore=$(sudo journalctl --disk-usage 2>/dev/null | cut -f1)
+    local sizeBefore=$(journalctl --disk-usage 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
     sudo journalctl --vacuum-time=7d
 
-    local sizeAfter=$(sudo journalctl --disk-usage 2>/dev/null | cut -f1)
+    local sizeAfter=$(journalctl --disk-usage 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}JOURNALCTL Cleaned.${WHITE}\n"
     sleep 1
