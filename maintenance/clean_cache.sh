@@ -131,6 +131,29 @@ function clean_journalctl() {
     echo -e "${BOLD_YELLOW}JOURNALCTL Cleaned.${WHITE}\n"
 }
 
+function clean_spotify() {
+    local path="/home/$USER/.cache/spotify"
+
+    print_line
+    echo -e "\n${BOLD_YELLOW}Cleaning Spotify...${WHITE}"
+
+    if [[ ! -d "$path" ]]; then
+        echo -e "\nDirectory not found.\n"
+        return
+    fi
+
+    local size_before=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "${BOLD_YELLOW}Size Before: ${size_before}${WHITE}\n"
+
+    rm -rf "${path}/*"
+
+    local size_after=$(du -sh "$path" 2>/dev/null | cut -f1)
+    echo -e "\n${BOLD_YELLOW}Size After: ${size_after}${WHITE}"
+    echo -e "${BOLD_YELLOW}Spotify Cleaned.${WHITE}\n"
+    return
+}
+
+
 old_file_system_info=$(get_file_system_info)
 
 clean_apt
@@ -146,6 +169,9 @@ clean_thumbnails
 sleep 1
 
 clean_journalctl
+sleep 1
+
+clean_spotify
 sleep 1
 
 new_file_system_info=$(get_file_system_info)
