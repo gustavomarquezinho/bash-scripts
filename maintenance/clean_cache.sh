@@ -15,22 +15,24 @@ function showLine() {
 }
 
 function cleanAPT() {
+    local path="/var/cache/apt"
+
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning APT...${WHITE}"
 
-    if [[ ! -d "/var/cache/apt" ]]; then
+    if [[ ! -d "$path" ]]; then
         echo -e "\nDirectory not found.\n"
         return
     fi
 
-    local sizeBefore=$(sudo du -sh /var/cache/apt 2>/dev/null | cut -f1)
+    local sizeBefore=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
     sudo apt clean
     sudo apt autoremove --purge -y
     sudo apt autoclean -y
 
-    local sizeAfter=$(sudo du -sh /var/cache/apt 2>/dev/null | cut -f1)
+    local sizeAfter=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
     printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}APT Cleaned.${WHITE}\n"
     sleep 1
@@ -38,15 +40,17 @@ function cleanAPT() {
 }
 
 function cleanSnap() {
+    local path="/var/lib/snapd/snaps"
+
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning SNAP...${WHITE}"
 
-    if [[ ! -d "/var/lib/snapd/snaps" ]]; then
+    if [[ ! -d "$path" ]]; then
         echo -e "\nDirectory not found.\n"
         return
     fi
 
-    local sizeBefore=$(sudo du -h /var/lib/snapd/snaps 2>/dev/null | cut -f1)
+    local sizeBefore=$(sudo du -h "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore" 
 
     set -eu
@@ -55,7 +59,7 @@ function cleanSnap() {
             sudo snap remove "$snapname" --revision="$revision"
         done
 
-    local sizeAfter=$(sudo du -sh /var/lib/snapd/snaps 2>/dev/null | cut -f1)
+    local sizeAfter=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
     printf "\n${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}SNAP Cleaned${WHITE}.\n"
     sleep 1
@@ -63,20 +67,17 @@ function cleanSnap() {
 }
 
 function cleanFlatpak() {
+    local path="/var/tmp/flatpak-cache-*"
+
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning FLATPAK...${WHITE}"
 
-    if [[ ! -d "/var/tmp/flatpak-cache*" ]]; then
-        echo -e "\nDirectory not found.\n"
-        return
-    fi
-
-    local sizeBefore=$(du -h /var/tmp/flatpak-cache* 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    local sizeBefore=$(du -h "$path" 2>/dev/null | awk '{sum+=$1} END {print sum}')
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "${sizeBefore}"
 
-    sudo rm -rfv /var/tmp/flatpak-cache-*
+    sudo rm -rfv "$path"
 
-    local sizeAfter=$(du -h /var/tmp/flatpak-cache* 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    local sizeAfter=$(du -h "$path" 2>/dev/null | awk '{sum+=$1} END {print sum}')
     printf "\n${BOLD_YELLOW}Size After: %.2f${WHITE}\n" "${sizeAfter}"
     echo -e "${BOLD_YELLOW}FLATPAK Cleaned.${WHITE}\n"
     sleep 1
@@ -84,20 +85,22 @@ function cleanFlatpak() {
 }
 
 function cleanThumbnails() {
+    local path="/home/$USER/.cache/thumbnails/"
+
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning THUMBNAILS...${WHITE}"
 
-    if [[ ! -d "/home/$USER/.cache/thumbnails" ]]; then
+    if [[ ! -d "$path" ]]; then
         echo -e "\nDirectory not found.\n"
         return
     fi
 
-    local sizeBefore=$(sudo du -sh ~/.cache/thumbnails 2>/dev/null | cut -f1)
+    local sizeBefore=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "$sizeBefore"
 
-    sudo rm -rf ~/.cache/thumbnails/*
+    sudo rm -rf "${path}/*"
 
-    local sizeAfter=$(sudo du -sh ~/.cache/thumbnails 2>/dev/null | cut -f1)
+    local sizeAfter=$(sudo du -sh "$path" 2>/dev/null | cut -f1)
     printf "${BOLD_YELLOW}Size After: %s${WHITE}\n" "$sizeAfter"
     echo -e "${BOLD_YELLOW}THUMBNAILS Cleaned.${WHITE}\n"
     sleep 1
