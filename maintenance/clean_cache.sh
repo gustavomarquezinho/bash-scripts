@@ -5,16 +5,16 @@ BOLD_YELLOW='\e[1;33m'
 WHITE='\033[0m'
 
 
-getFileSystemInfo() {
+function getFileSystemInfo() {
     result=$(df -BM --output=target,size,used,avail,pcent / /home)
     echo -e "$result"
 }
 
-showLine() {
+function showLine() {
     printf "%"60"s\n" | tr " " "_"
 }
 
-cleanAPT() {
+function cleanAPT() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning APT...${WHITE}"
     local sizeBefore=$(sudo du -sh /var/cache/apt 2>/dev/null | cut -f1)
@@ -30,7 +30,7 @@ cleanAPT() {
     sleep 1
 }
 
-cleanSnap() {
+function cleanSnap() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning SNAP...${WHITE}"
     local sizeBefore=$(sudo du -h /var/lib/snapd/snaps 2>/dev/null | cut -f1)
@@ -48,7 +48,7 @@ cleanSnap() {
     sleep 1
 }
 
-cleanFlatpak() {
+function cleanFlatpak() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning FLATPAK...${WHITE}"
     local sizeBefore=$(du -h /var/tmp/flatpak-cache* 2>/dev/null | awk '{sum+=$1} END {print sum}')
@@ -62,7 +62,7 @@ cleanFlatpak() {
     sleep 1
 }
 
-cleanThumbnails() {
+function cleanThumbnails() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning THUMBNAILS...${WHITE}"
     local sizeBefore=$(sudo du -sh ~/.cache/thumbnails 2>/dev/null | cut -f1)
@@ -76,7 +76,7 @@ cleanThumbnails() {
     sleep 1
 }
 
-cleanJournalctl() {
+function cleanJournalctl() {
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning JOURNALCTL...${WHITE}"
     local sizeBefore=$(sudo journalctl --disk-usage 2>/dev/null | cut -f1)
