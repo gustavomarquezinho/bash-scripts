@@ -67,17 +67,32 @@ function cleanSnap() {
 }
 
 function cleanFlatpak() {
-    local path="/var/tmp/flatpak-cache-*"
+    local path="/var/tmp/"
+    local folder_prefix="flatpak-cache-*"
+
+    local folders=$(
+        ls /var/tmp | grep "$folder_prefix" | 
+        while read filename; do
+            echo "$filename"
+        done
+    )
 
     showLine
     echo -e "\n${BOLD_YELLOW}Cleaning FLATPAK...${WHITE}"
 
-    local sizeBefore=$(du -h "$path" 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    if [[ -z "$folders" ]]; then
+        echo -e "\nDirectory not found.\n"
+        return
+    fi
+
+    local sizeBefore=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
     printf "${BOLD_YELLOW}Size Before: %s${WHITE}\n\n" "${sizeBefore}"
 
-    sudo rm -rfv "$path"
+    for folder in $folders; do
+        sudo rm -rfv "${path}/${folder}"
+    done
 
-    local sizeAfter=$(du -h "$path" 2>/dev/null | awk '{sum+=$1} END {print sum}')
+    local sizeAfter=$(du -h "$path"/* 2>/dev/null | grep -E "^.*flatpak-cache-.*$" | awk '{sum+=$1} END {print sum}')
     printf "\n${BOLD_YELLOW}Size After: %.2f${WHITE}\n" "${sizeAfter}"
     echo -e "${BOLD_YELLOW}FLATPAK Cleaned.${WHITE}\n"
     sleep 1
